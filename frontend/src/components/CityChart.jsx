@@ -8,25 +8,12 @@ import {
   YAxis,
 } from "recharts";
 
-const data = [
-  { city: "شهر 1", value: 420 },
-  { city: "شهر 2", value: 380 },
-  { city: "شهر 3", value: 350 },
-  { city: "شهر 4", value: 320 },
-  { city: "شهر 5", value: 290 },
-  { city: "شهر 6", value: 260 },
-  { city: "شهر 7", value: 240 },
-  { city: "شهر 8", value: 210 },
-];
-
-const CityChart = () => {
+const CityChart = ({ data }) => {
   return (
     <section className="rounded-2xl border border-gray-800 bg-gray-900 p-6">
       <div className="mb-6 flex items-start justify-between">
         <div>
-          <h3 className="font-semibold text-white">
-            دستورکارها بر اساس شهر
-          </h3>
+          <h3 className="font-semibold text-white">دستورکارها بر اساس شهر</h3>
 
           <p className="mt-1 text-xs text-gray-500">
             مقایسه حجم دستورکارهای ثبت‌شده در شهرها
@@ -34,7 +21,7 @@ const CityChart = () => {
         </div>
 
         <span className="rounded-lg bg-gray-800 px-3 py-1 text-xs text-gray-400">
-          16 شهر
+          {data?.length ?? 0} شهر
         </span>
       </div>
 
@@ -43,38 +30,62 @@ const CityChart = () => {
           <BarChart
             data={data}
             layout="vertical"
-            margin={{ left: 20 }}
+            margin={{ left: 10, right: 20, top: 5, bottom: 5 }}
+            barCategoryGap="25%"
           >
             <CartesianGrid
-              strokeDasharray="3 3"
+              strokeDasharray="4 4"
               horizontal={false}
-              stroke="#374151"
+              stroke="#1f2937"
             />
 
             <XAxis
               type="number"
-              stroke="#6b7280"
+              axisLine={false}
+              tickLine={false}
+              tick={{
+                fill: "#6b7280",
+                fontSize: 11,
+              }}
             />
 
             <YAxis
               type="category"
               dataKey="city"
-              stroke="#6b7280"
-              width={80}
+              axisLine={false}
+              tickLine={false}
+              tick={{
+                fill: "#9ca3af",
+                fontSize: 11,
+              }}
+              width={100}
+              interval={0}
             />
 
             <Tooltip
+              cursor={false}
               contentStyle={{
                 background: "#111827",
                 border: "1px solid #374151",
                 borderRadius: "12px",
+                padding: "10px 14px",
+                boxShadow: "0 10px 30px rgba(0, 0, 0, 0.35)",
+              }}
+              labelStyle={{
+                color: "#d1d5db",
+                marginBottom: "4px",
+              }}
+              itemStyle={{
+                color: "#60a5fa",
               }}
             />
 
             <Bar
-              dataKey="value"
+              dataKey="total"
               fill="#3b82f6"
-              radius={[0, 6, 6, 0]}
+              activeBar={false}
+              radius={[0, 8, 8, 0]}
+              maxBarSize={28}
             />
           </BarChart>
         </ResponsiveContainer>

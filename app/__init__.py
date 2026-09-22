@@ -3,7 +3,7 @@ import os
 from flask import Flask
 from dotenv import load_dotenv
 from flasgger import Swagger
-
+from flask_cors import CORS
 from app.db import db
 
 
@@ -12,7 +12,7 @@ load_dotenv()
 
 def create_app():
     app = Flask(__name__)
-
+    CORS(app)
     db_user = os.getenv("DB_USER")
     db_password = os.getenv("DB_PASSWORD")
     db_host = os.getenv("DB_HOST", "localhost")

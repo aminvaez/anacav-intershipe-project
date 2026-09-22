@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,22 +19,16 @@ const Header = () => {
               href="/"
               className="transition-colors hover:text-white"
             >
-              خانه
-            </a>
-
-            <a
-              href="/dashboard"
-              className="transition-colors hover:text-white"
-            >
               داشبورد
             </a>
 
-            <a
-              href="/about"
+            <Link
+              to="/aboutproject"
               className="transition-colors hover:text-white"
             >
               درباره پروژه
-            </a>
+            </Link>
+
           </div>
 
           {/* Mobile Menu Button */}
@@ -84,24 +79,16 @@ const Header = () => {
             onClick={() => setIsOpen(false)}
             className="rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
           >
-            خانه
-          </a>
-
-          <a
-            href="/dashboard"
-            onClick={() => setIsOpen(false)}
-            className="rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
-          >
             داشبورد
           </a>
 
-          <a
-            href="/about"
+          <Link
+            to="/aboutproject"
             onClick={() => setIsOpen(false)}
             className="rounded-lg px-4 py-3 text-gray-300 transition hover:bg-gray-800 hover:text-white"
           >
             درباره پروژه
-          </a>
+          </Link>
         </div>
       </aside>
     </>
