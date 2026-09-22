@@ -6,7 +6,7 @@ const Header = () => {
 
   return (
     <>
-      <header dir="rtl" className="w-full border-b border-gray-800 bg-gray-950">
+      <header dir="rtl" className="sticky inset-x-0 top-0 z-50 w-full border-b border-gray-800 bg-gray-950">
         <nav className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
           {/* Logo / Title */}
           <h1 className="text-xl font-bold text-white">
@@ -53,7 +53,7 @@ const Header = () => {
       {/* Mobile Side Menu */}
       <aside
         dir="rtl"
-        className={`fixed right-0 top-0 z-50 h-full w-72 transform bg-gray-950 p-6 shadow-2xl transition-transform duration-300 md:hidden ${
+        className={`fixed right-0 top-0 z-50 h-full w-100 transform bg-gray-950 p-6 shadow-2xl transition-transform duration-300 md:hidden ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >

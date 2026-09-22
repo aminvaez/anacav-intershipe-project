@@ -19,9 +19,7 @@ import {
 
 
 const Dashboard = () => {
-  // -------------------------
-  // Filter state
-  // -------------------------
+
 
   const [filters, setFilters] = useState({
     year: "",
@@ -40,9 +38,7 @@ const Dashboard = () => {
   });
 
 
-  // -------------------------
-  // Dashboard data
-  // -------------------------
+
 
   const [summary, setSummary] = useState(null);
   const [monthly, setMonthly] = useState([]);
@@ -54,10 +50,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
 
 
-  // -------------------------
-  // Load filter options
-  // فقط یک بار
-  // -------------------------
+
 
   useEffect(() => {
     const loadFilterOptions = async () => {
@@ -77,10 +70,6 @@ const Dashboard = () => {
   }, []);
 
 
-  // -------------------------
-  // Load dashboard
-  // هر بار filters تغییر کند
-  // -------------------------
 
   useEffect(() => {
     const loadDashboard = async () => {

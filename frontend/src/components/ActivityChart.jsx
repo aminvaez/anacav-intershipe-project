@@ -8,7 +8,22 @@ import {
   YAxis,
 } from "recharts";
 
+const activityNames = {
+  test_7: "تست ۷",
+  test_4_a: "تست ۴",
+  test_4_b: "تست ۵",
+  test_1: "تست ۱",
+  test_2: "تست ۲",
+  test_3: "تست ۳",
+  test_6: "تست ۶",
+};
+
 const ActivityChart = ({ data }) => {
+  const chartData = data.map((item) => ({
+    ...item,
+    activity: activityNames[item.activity] || item.activity,
+  }));
+
   return (
     <section className="rounded-2xl border border-gray-800 bg-gray-900 p-6">
       <div className="mb-6">
@@ -22,7 +37,7 @@ const ActivityChart = ({ data }) => {
       <div className="h-72" dir="ltr">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart
-            data={data}
+            data={chartData}
             layout="vertical"
             margin={{ left: 10, right: 20, top: 5, bottom: 5 }}
             barCategoryGap="25%"
