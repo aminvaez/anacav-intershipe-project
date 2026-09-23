@@ -1,0 +1,113 @@
+services:
+
+  # -------------------------
+  # PostgreSQL
+  # -------------------------
+
+  db:
+    image: postgres:17
+    container_name: anacav_db
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres:/docker-entrypoint-initdb.d
+      - ./data:/docker-data:ro
+      - ./sql:/docker-sql:ro
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "pg_isready -U postgres -d postgres"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+
+  # -------------------------
+  # ETL
+  # -------------------------
+
+  etl:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+
+    container_name: anacav_etl
+
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SOURCE_DB: source_db
+      WAREHOUSE_DB: warehouse_db
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    command: ["python", "-m", "etl.etl"]
+
+    restart: "no"
+
+
+  # -------------------------
+  # Flask Backend
+  # -------------------------
+
+  backend:
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+
+    container_name: anacav_backend
+
+    ports:
+      - "5001:5000"
+
+    environment:
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      SOURCE_DB: source_db
+      WAREHOUSE_DB: warehouse_db
+
+    depends_on:
+      etl:
+        condition: service_completed_successfully
+
+
+  # -------------------------
+  # React Frontend
+  # -------------------------
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+
+    container_name: anacav_frontend
+
+    ports:
+      - "5173:5173"
+
+    environment:
+      VITE_API_URL: http://localhost:5001/api
+
+    depends_on:
+      - backend
+
+
+volumes:
+  postgres_data:
