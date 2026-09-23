@@ -5,7 +5,22 @@ A full-stack data engineering and analytics project for processing, storing, tra
 The project starts with raw Excel data and implements a complete data pipeline including data analysis, PostgreSQL databases, ETL, a star-schema data warehouse, Flask REST APIs, and an interactive React dashboard.
 
 ---
+## Quick Start
 
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### Run the project
+
+```bash
+git clone <repository-url>
+cd  anacav-intershipe-project
+cp .env.example .env
+docker compose up --build
+```
+---
 ## Project Overview
 
 The purpose of this project is to demonstrate an end-to-end data workflow:
