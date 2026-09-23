@@ -588,39 +588,245 @@ Do not commit the `.env` file to version control.
 
 ---
 
-## Running the Project
+## Running the Project with Docker
 
-### Run ETL
+The entire project is Dockerized and can be started using Docker Compose.
 
-```bash
-python -m etl.etl
-```
+The Docker setup includes four services:
 
-### Run Flask Backend
+- PostgreSQL database
+- Python ETL service
+- Flask backend API
+- React frontend dashboard
 
-```bash
-python run.py
-```
+### Prerequisites
 
-The API will be available at:
+Before running the project, make sure the following are installed:
 
-```text
-http://127.0.0.1:5000
-```
+- Docker
+- Docker Compose
 
-### Run React Frontend
-
-Open another terminal:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Vite will display the local frontend URL in the terminal.
+On macOS, Docker Desktop can be used.
 
 ---
+
+### 1. Clone the Repository
+
+Clone the project and move to the project root directory:
+
+```bash
+git clone <repository-url>
+```
+
+---
+
+### 2. Configure Environment Variables
+
+Create a `.env` file in the project root if it does not already exist.
+
+You can use `.env.example` as a template.
+
+Example:
+
+```env
+DB_HOST=db
+DB_PORT=5432
+DB_USER=postgres
+DB_PASSWORD=postgres
+
+SOURCE_DB=source_db
+WAREHOUSE_DB=warehouse_db
+
+VITE_API_URL=http://localhost:5001/api
+```
+
+> When running inside Docker, `DB_HOST` must be `db`, because `db` is the PostgreSQL service name defined in `docker-compose.yml`.
+
+---
+
+### 3. Build and Start the Project
+
+From the root directory, run:
+
+```bash
+docker compose up --build
+```
+
+On the first run, Docker Compose will automatically:
+
+1. Build the backend, ETL, and frontend images.
+2. Start the PostgreSQL container.
+3. Create `source_db`.
+4. Create `warehouse_db`.
+5. Create the source database schema.
+6. Load `clean_work_orders.csv` into the source database.
+7. Create the warehouse Star Schema.
+8. Run the ETL pipeline.
+9. Load the Dimension and Fact tables.
+10. Start the Flask backend.
+11. Start the React frontend.
+
+A successful first initialization should include:
+
+```text
+COPY 1536
+```
+
+A successful ETL execution should include:
+
+```text
+Starting ETL...
+Extracted 1536 rows from source_db.
+Source validation passed.
+Dimensions prepared: 16 cities, 3 dates, 7 activities, 5 statuses.
+Dimensions loaded.
+Prepared 1536 fact records.
+Loaded 1536 fact records.
+ETL completed successfully.
+```
+
+The ETL container will then exit with code `0`. This is expected because ETL is a one-time processing job.
+
+---
+
+### 4. Open the Application
+
+After all services have started, open the dashboard in your browser:
+
+```text
+http://localhost:5173
+```
+
+The Flask REST API is available at:
+
+```text
+http://localhost:5001
+```
+
+For example, the summary endpoint can be tested at:
+
+```text
+http://localhost:5001/api/summary
+```
+
+Expected response:
+
+```json
+{
+  "total_activities": 7,
+  "total_cities": 16,
+  "total_work_orders": 3875
+}
+```
+
+---
+
+### 5. Check Container Status
+
+Open another terminal and run:
+
+```bash
+docker compose ps
+```
+
+The expected state is:
+
+```text
+db         Running (healthy)
+backend    Running
+frontend   Running
+etl        Exited (0)
+```
+
+`etl` exiting with code `0` is normal and indicates that the ETL job completed successfully.
+
+---
+
+### 6. Stop the Project
+
+To stop the containers:
+
+```bash
+docker compose down
+```
+
+This stops and removes the containers while preserving the PostgreSQL data volume.
+
+To start the project again:
+
+```bash
+docker compose up
+```
+
+---
+
+### 7. Rebuild After Code Changes
+
+If application code, dependencies, Dockerfiles, or Docker configuration have changed, rebuild the project:
+
+```bash
+docker compose up --build
+```
+
+---
+
+### 8. Reset the Databases
+
+If you want to completely reset the Docker databases and rerun database initialization from the beginning:
+
+```bash
+docker compose down -v
+docker compose up --build
+```
+
+> **Warning:** `docker compose down -v` permanently deletes the PostgreSQL Docker volume used by this project. The source database and warehouse will be recreated from the project data on the next startup.
+
+---
+
+### 9. Run the ETL Manually
+
+The ETL process can be executed manually with:
+
+```bash
+docker compose run --rm etl
+```
+
+The ETL process is designed to be idempotent, so running it again does not create duplicate Fact or Dimension records.
+
+---
+
+## Docker Data Flow
+
+When the project starts for the first time, the following workflow is executed automatically:
+
+```text
+clean_work_orders.csv
+        │
+        ▼
+PostgreSQL
+source_db
+        │
+        ▼
+Python ETL
+        │
+        ▼
+PostgreSQL
+warehouse_db
+        │
+        ▼
+Flask REST API
+localhost:5001
+        │
+        ▼
+React Dashboard
+localhost:5173
+```
+
+Therefore, the complete application can be initialized and started with:
+
+```bash
+docker compose up --build
+```
 
 ## Data Validation
 
